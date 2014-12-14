@@ -1,0 +1,56 @@
+package menon.cs6100.program1;
+
+import java.util.ArrayList;
+
+public class TerrainGrid {
+
+	private ArrayList<PointOnTerrain> grid;
+	private int terrainWidth;
+	private int terrainHeight;
+	
+	//Constructor takes dimensions of the terrain
+	public TerrainGrid(int width, int height) {
+		
+		this.terrainWidth = width;
+		this.terrainHeight = height;
+		
+		grid = new ArrayList<PointOnTerrain>(width * height);
+		for (PointOnTerrain pointOnTerrain : grid) {
+			pointOnTerrain.setfScore(0);
+			pointOnTerrain.setgScore(0);
+		}
+	}
+		
+	public PointOnTerrain getNeighborToNorth(int currentXCoordinate, int currentYCorrdinate) {
+		
+		//Check if valid values have been passed in
+		if (currentXCoordinate > this.terrainWidth - 1 || currentYCorrdinate > this.terrainHeight - 1) {
+			return null;
+		}
+		
+		return grid.get(index);
+		
+	}
+	
+	
+	//Class for storing scores associated with point on terrain
+	private class PointOnTerrain {
+		
+		private double gScore;
+		private double fScore;
+		
+		public double getgScore() {
+			return gScore;
+		}
+		public void setgScore(double gScore) {
+			this.gScore = gScore;
+		}
+		public double getfScore() {
+			return fScore;
+		}
+		public void setfScore(double fScore) {
+			this.fScore = fScore;
+		}	
+		
+	}
+}

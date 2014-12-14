@@ -1,0 +1,9 @@
+package menon.cs6100.program1;
+
+import java.util.PriorityQueue;
+
+//This agent uses the A* algorithm to find the shortest route from start to destination
+public class TerrainNavigationAgent {
+
+	private PriorityQueue<PointOnTerrain> openSet = new PriorityQueue<PointOnTerrain>();
+}

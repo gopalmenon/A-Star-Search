@@ -1,0 +1,21 @@
+package menon.cs6100.program1;
+
+import java.util.HashSet;
+import java.util.PriorityQueue;
+import java.util.Set;
+
+//This agent uses the A* algorithm to find the shortest route from start to destination
+public class TerrainNavigationAgent {
+	
+	//The set of nodes already evaluated
+	private Set<PointOnTerrain> closedSet = new HashSet<PointOnTerrain>();
+	//Tentative nodes to be evaluated ordered by increasing f score
+	private PriorityQueue<PointOnTerrain> openSet = new PriorityQueue<PointOnTerrain>();
+	//Used to reconstruct the path back to the start node
+	private Set<PointOnTerrain> cameFrom = new HashSet<PointOnTerrain>();
+	
+	
+	
+	
+	
+}

@@ -1,0 +1,167 @@
+package menon.cs6100.program1;
+
+import java.util.ArrayList;
+
+public class TerrainGrid {
+
+	private ArrayList<PointOnTerrain> grid;
+	private int terrainWidth;
+	private int terrainHeight;
+	
+	//Constructor takes dimensions of the terrain
+	public TerrainGrid(int width, int height) {
+		
+		this.terrainWidth = width;
+		this.terrainHeight = height;
+		
+		grid = new ArrayList<PointOnTerrain>(width * height);
+		for (PointOnTerrain pointOnTerrain : grid) {
+			pointOnTerrain.setfScore(0);
+			pointOnTerrain.setgScore(0);
+			pointOnTerrain.setAccessible(true);
+		}
+	}
+	
+	//Get the point corresponding to the neighbor to the north
+	public PointOnTerrain getNeighborToNorth(int currentXCoordinate, int currentYCoordinate) {
+		
+		//Check if valid values have been passed in
+		if (!isValidCoordinate(currentXCoordinate, currentYCoordinate)) {
+			return null;
+		}
+		
+		//Check if current point is on the border of the terrain
+		if (currentYCoordinate == 0) {
+			return null;
+		}
+		
+		int currentPointOffset = getTerrainOffset(currentXCoordinate, currentYCoordinate);
+		
+		return grid.get(currentPointOffset - this.terrainWidth);
+		
+	}
+	
+	//Get the point corresponding to the neighbor to the south
+	public PointOnTerrain getNeighborToSouth(int currentXCoordinate, int currentYCoordinate) {
+		
+		//Check if valid values have been passed in
+		if (!isValidCoordinate(currentXCoordinate, currentYCoordinate)) {
+			return null;
+		}
+		
+		//Check if current point is on the border of the terrain
+		if (currentYCoordinate == this.terrainHeight - 1) {
+			return null;
+		}
+		
+		int currentPointOffset = getTerrainOffset(currentXCoordinate, currentYCoordinate);
+		
+		return grid.get(currentPointOffset + this.terrainWidth);
+		
+	}
+	
+	//Get the point corresponding to the neighbor to the East
+	public PointOnTerrain getNeighborToEast(int currentXCoordinate, int currentYCoordinate) {
+		
+		//Check if valid values have been passed in
+		if (!isValidCoordinate(currentXCoordinate, currentYCoordinate)) {
+			return null;
+		}
+		
+		//Check if current point is on the border of the terrain
+		if (currentXCoordinate == this.terrainWidth - 1) {
+			return null;
+		}
+		
+		int currentPointOffset = getTerrainOffset(currentXCoordinate, currentYCoordinate);
+		
+		return grid.get(currentPointOffset + 1);
+		
+	}
+	
+	//Get the point corresponding to the neighbor to the East
+	public PointOnTerrain getNeighborToWest(int currentXCoordinate, int currentYCoordinate) {
+		
+		//Check if valid values have been passed in
+		if (!isValidCoordinate(currentXCoordinate, currentYCoordinate)) {
+			return null;
+		}
+		
+		//Check if current point is on the border of the terrain
+		if (currentXCoordinate == 0) {
+			return null;
+		}
+		
+		int currentPointOffset = getTerrainOffset(currentXCoordinate, currentYCoordinate);
+		
+		return grid.get(currentPointOffset - 1);
+		
+	}
+	
+	//Set up rectangular barrier on terrain
+	public void setRectangularBarrier(int topLeftXCoordinate, int topLeftYCoordinate, int rectangleWidth, int rectangleHeight) {
+		
+		if (!isValidCoordinate(topLeftXCoordinate, topLeftYCoordinate)) {
+			return;
+		}
+		
+		//Compute maximum X and Y allowed coordinates as the rectangle may not fit in the terrain
+		int maximumXCoordinate = topLeftXCoordinate + rectangleWidth - 1 < this.terrainWidth ? topLeftXCoordinate + rectangleWidth - 1 : this.terrainWidth -1 ;
+		int maximumYCoordinate = topLeftYCoordinate + rectangleHeight - 1 < this.terrainWidth ? topLeftYCoordinate + rectangleHeight - 1 : this.terrainHeight -1 ;
+				
+		//Mark area covered by the rectangle as inaccessible, i.e. has a barrier
+		for (int rectangleXCoordinate = topLeftXCoordinate; rectangleXCoordinate <= maximumXCoordinate; ++rectangleXCoordinate) {
+			for (int rectangleYCoordinate = topLeftYCoordinate; rectangleYCoordinate <= maximumYCoordinate; ++rectangleYCoordinate) {
+				grid.get(getTerrainOffset(rectangleXCoordinate, rectangleYCoordinate)).setAccessible(false);
+			}
+		}
+	}
+	
+	//Set 
+	
+	//Check if the coordinates passed in are valid for the terrain
+	private boolean isValidCoordinate(int xCoordinate, int yCoordinate) {
+		
+		if (xCoordinate > this.terrainWidth - 1 || yCoordinate > this.terrainHeight - 1 || xCoordinate < 0 || yCoordinate < 0) {
+			return false;
+		} else {
+			return true;
+		}
+				
+	}
+	
+	//Return terrain offset in array list given x and y coordinates 
+	private int getTerrainOffset(int xCoordinate, int yCoordinate) {
+		
+		return yCoordinate * this.terrainWidth + xCoordinate;
+		
+	}
+	
+	//Class for storing scores associated with point on terrain
+	private class PointOnTerrain {
+		
+		private double gScore;
+		private double fScore;
+		private boolean isAccessible;
+		
+		public double getgScore() {
+			return gScore;
+		}
+		public void setgScore(double gScore) {
+			this.gScore = gScore;
+		}
+		public double getfScore() {
+			return fScore;
+		}
+		public void setfScore(double fScore) {
+			this.fScore = fScore;
+		}
+		public boolean isAccessible() {
+			return isAccessible;
+		}
+		public void setAccessible(boolean isAccessible) {
+			this.isAccessible = isAccessible;
+		}	
+		
+	}
+}

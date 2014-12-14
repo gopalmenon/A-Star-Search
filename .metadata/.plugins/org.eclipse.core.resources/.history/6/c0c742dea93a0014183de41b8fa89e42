@@ -1,0 +1,7 @@
+package menon.cs6100.program1;
+
+import java.util.Comparator;
+
+public class TerrainPointComparator extends Comparator {
+
+}

@@ -1,0 +1,204 @@
+package menon.cs6100.program1;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+import javax.swing.*;
+
+public class AStarSearchDemo {
+
+	private static final int VERTICAL_RECTANGLE_MODE = 0;
+	private static final int HORIZONTAL_RECTANGLE_MODE = 1;
+	private static final int ADD_START_MODE = 2;
+	private static final int ADD_END_MODE = 3;
+	private static final int FIND_ROUTE_MODE = 4;
+	
+	private static int selectedMode = 0;
+
+	/**
+     * Create the GUI and show it.  For thread safety,
+     * this method should be invoked from the
+     * event-dispatching thread.
+     */
+    private static void createAndShowGUI() {
+        //Create and set up the window.
+        JFrame frame = new JFrame("A* Search Demo");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setResizable(false);
+
+        //Create the menu bar.  Make it have a green background.
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.setOpaque(true);
+        //menuBar.setBackground(new Color(154, 165, 127));
+        menuBar.setPreferredSize(new Dimension(640, 20));
+        
+        //Create user menus
+        JMenu fileMenu, obstaclesMenu, routeMenu;
+        JMenuItem exitMenuItem, addVerticalRectangleMenuItem, addHorizontalRectangleMenuItem, addStartMenuItem, addEndMenuItem, findRouteMenuItem;
+        
+        //File menu
+        fileMenu = new JMenu("File");
+        exitMenuItem = new JMenuItem("Exit");
+        exitMenuItem.addActionListener(new ActionListener() {public void actionPerformed(ActionEvent e) {System.exit(0);} });
+        fileMenu.add(exitMenuItem);
+        menuBar.add(fileMenu);
+        
+        //Obstacles menu
+        obstaclesMenu = new JMenu("Obstacles");
+        addVerticalRectangleMenuItem = new JMenuItem("Vertical Rectangle");
+        addVerticalRectangleMenuItem.addActionListener(new ActionListener() {public void actionPerformed(ActionEvent e) {selectedMode = VERTICAL_RECTANGLE_MODE;} });
+        addHorizontalRectangleMenuItem = new JMenuItem("Horizontal Rectangle");
+        addHorizontalRectangleMenuItem.addActionListener(new ActionListener() {public void actionPerformed(ActionEvent e) {selectedMode = HORIZONTAL_RECTANGLE_MODE;} });
+        obstaclesMenu.add(addVerticalRectangleMenuItem);
+        obstaclesMenu.add(addHorizontalRectangleMenuItem);
+        menuBar.add(obstaclesMenu);
+        
+        //Route menu
+        routeMenu = new JMenu("Route");
+        addStartMenuItem = new JMenuItem("Add Start");
+        addStartMenuItem.addActionListener(new ActionListener() {public void actionPerformed(ActionEvent e) {selectedMode = ADD_START_MODE;} });
+        addEndMenuItem = new JMenuItem("Add End");
+        addEndMenuItem.addActionListener(new ActionListener() {public void actionPerformed(ActionEvent e) {selectedMode = ADD_END_MODE;} });
+        findRouteMenuItem = new JMenuItem("Find Route");
+        findRouteMenuItem.addActionListener(new ActionListener() {public void actionPerformed(ActionEvent e) {selectedMode = FIND_ROUTE_MODE;} });
+        routeMenu.add(addStartMenuItem);
+        routeMenu.add(addEndMenuItem);
+        routeMenu.add(findRouteMenuItem);
+        menuBar.add(routeMenu);
+        
+        //Create the obstacles terrain
+        ObstaclesTerrain obstaclesTerrain = new ObstaclesTerrain();
+        obstaclesTerrain.setPreferredSize(new Dimension(640, 480));
+        findRouteMenuItem.addMouseListener(obstaclesTerrain);
+ 
+        //Set the menu bar and add the label to the content pane.
+        frame.setJMenuBar(menuBar);
+        frame.getContentPane().add(obstaclesTerrain, BorderLayout.CENTER);
+        frame.addMouseListener(obstaclesTerrain);
+        //Display the window.
+        frame.pack();
+        frame.setVisible(true);
+    }
+    
+    //Define the terrain that will contain the obstacles, start an d end points
+    @SuppressWarnings("serial")
+	static class ObstaclesTerrain extends JPanel implements MouseListener {
+    	
+    	private static ArrayList<Point> horizontalRectangles = new ArrayList<Point>();
+    	private static ArrayList<Point> verticalRectangles = new ArrayList<Point>();
+    	private static ArrayList<Point> route = new ArrayList<Point>();
+    	private static Point startPoint = null;
+    	private static Point endPoint = null;
+    	
+        public void paintComponent(Graphics g) {
+        	
+            super.paintComponent(g);
+
+            //Draw vertical rectangles
+            g.setColor(Color.BLACK);
+            for (Point point : verticalRectangles) {
+            	g.fillRect(point.x, point.y, 10, 75);
+            }
+
+            //Draw horizontal rectangles
+            g.setColor(Color.BLACK);
+            for (Point point : horizontalRectangles) {
+            	g.fillRect(point.x, point.y, 75, 10);
+            }
+            
+            //Draw start point
+            g.setColor(Color.GREEN);
+            if (startPoint != null) {
+            	g.fillOval(startPoint.x, startPoint.y, 10, 10);
+            }
+            
+            //Draw end point
+            g.setColor(Color.RED);
+            if (endPoint != null) {
+            	g.fillOval(endPoint.x, endPoint.y, 10, 10);
+            }
+            
+            if (selectedMode == FIND_ROUTE_MODE) {
+            	if (startPoint != null && endPoint != null) {
+            		g.setColor(Color.ORANGE);
+            		g.drawLine(startPoint.x + 5, startPoint.y + 5, endPoint.x + 5, endPoint.y + 5);
+            	}
+            }
+        }
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			
+			switch (selectedMode) {
+			
+			case VERTICAL_RECTANGLE_MODE:
+				verticalRectangles.add(new Point(e.getX(), e.getY()-45));
+				break;
+				
+			case HORIZONTAL_RECTANGLE_MODE:
+				horizontalRectangles.add(new Point(e.getX(), e.getY()-45));
+				break;
+				
+			case ADD_START_MODE:
+				startPoint = new Point(e.getX(), e.getY()-45);
+				break;
+							
+			case ADD_END_MODE:
+				endPoint = new Point(e.getX(), e.getY()-45);
+				break;
+				
+			case FIND_ROUTE_MODE:
+				System.out.println("Finding route.....");
+				break;
+				
+			}
+			
+			repaint();
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+		}    	
+    }
+    
+    static class routeFinder {
+    	
+    	private ArrayList<Point> route;
+    	
+    	routeFinder(ArrayList<Point> horizontalRectangles, ArrayList<Point> verticalRectangles, Point startPoint, Point endPoint) {
+    		route = new ArrayList<Point>();
+    	}
+    	
+    	public boolean isAbleToFindRoute() {
+    		return true;
+    	}
+    	
+    	public List<Point> getRoute() {
+    		return Collections.unmodifiableList(route);
+    	}
+    }
+    
+    public static void main(String[] args) {
+        //Schedule a job for the event-dispatching thread:
+        //creating and showing this application's GUI.
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                createAndShowGUI();
+            }
+        });
+    }
+}

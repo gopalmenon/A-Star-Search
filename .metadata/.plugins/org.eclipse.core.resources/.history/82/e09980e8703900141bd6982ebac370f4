@@ -1,0 +1,87 @@
+package menon.cs6100.program1;
+
+//Class for storing scores associated with point on terrain
+public class PointOnTerrain {
+	
+	private double gScore;
+	private double fScore;
+	private boolean isAccessible;
+	private int xCoordinate;
+	private int yCoordinate;
+	PointOnTerrain cameFrom;
+	
+	private static final int BEFORE = -1;
+	private static final int EQUAL = 0;
+	private static final int AFTER = 1;
+	
+	//Constructor
+	public PointOnTerrain(int xCoordinate, int yCoordinate) {
+		this.gScore = 0.0;
+		this.fScore = 0.0;
+		this.isAccessible = true;
+		this.xCoordinate = xCoordinate;
+		this.yCoordinate = yCoordinate;
+	}
+	
+	//Method used by priority queue to order objects of this class
+	public int compareTo(PointOnTerrain otherPoint) {
+		
+		if (otherPoint == null) {
+			throw new NullPointerException();
+		}
+		
+		if (this.fScore == otherPoint.getfScore()) {
+			return EQUAL;
+		} else  if (this.fScore < otherPoint.getfScore()) {
+			return BEFORE;
+		} else {
+			return AFTER;
+		}
+
+	}
+	
+	//Get distance between point locations
+	public double getDistanceToPoint(PointOnTerrain distinationPoint) {
+		
+		return Math.sqrt(Math.pow(this.getxCoordinate() - distinationPoint.getxCoordinate(), 2) + Math.pow(this.getyCoordinate() - distinationPoint.getyCoordinate(), 2));
+		
+	}
+	
+	//Getters and setters
+	public double getgScore() {
+		return gScore;
+	}
+	public void setgScore(double gScore) {
+		this.gScore = gScore;
+	}
+	public double getfScore() {
+		return fScore;
+	}
+	public void setfScore(double fScore) {
+		this.fScore = fScore;
+	}
+	public boolean isAccessible() {
+		return isAccessible;
+	}
+	public void setAccessible(boolean isAccessible) {
+		this.isAccessible = isAccessible;
+	}
+
+	public int getxCoordinate() {
+		return xCoordinate;
+	}
+
+	public int getyCoordinate() {
+		return yCoordinate;
+	}
+
+	public PointOnTerrain getCameFrom() {
+		return cameFrom;
+	}
+
+	void setCameFrom(PointOnTerrain cameFrom) {
+		this.cameFrom = cameFrom;
+	}
+	
+}
+

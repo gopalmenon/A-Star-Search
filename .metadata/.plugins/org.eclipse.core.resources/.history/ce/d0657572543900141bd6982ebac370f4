@@ -1,0 +1,36 @@
+package menon.cs6100.program1;
+
+//Class for storing scores associated with point on terrain
+public class PointOnTerrain {
+	
+	private double gScore;
+	private double fScore;
+	private boolean isAccessible;
+	
+	public PointOnTerrain() {
+		this.gScore = 0.0;
+		this.fScore = 0.0;
+		this.isAccessible = true;
+	}
+	
+	public double getgScore() {
+		return gScore;
+	}
+	public void setgScore(double gScore) {
+		this.gScore = gScore;
+	}
+	public double getfScore() {
+		return fScore;
+	}
+	public void setfScore(double fScore) {
+		this.fScore = fScore;
+	}
+	public boolean isAccessible() {
+		return isAccessible;
+	}
+	public void setAccessible(boolean isAccessible) {
+		this.isAccessible = isAccessible;
+	}	
+	
+}
+

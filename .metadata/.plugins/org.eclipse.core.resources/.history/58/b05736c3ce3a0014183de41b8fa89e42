@@ -1,0 +1,156 @@
+package menon.cs6100.program1;
+
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.util.ArrayList;
+
+import javax.swing.JPanel;
+
+
+//Define the terrain that will contain the obstacles, start an d end points
+@SuppressWarnings("serial")
+public class ObstaclesTerrain extends JPanel implements MouseListener {
+
+	private static final int VERTICAL_RECTANGLE_MODE = 0;
+	private static final int HORIZONTAL_RECTANGLE_MODE = 1;
+	private static final int ADD_START_MODE = 2;
+	private static final int ADD_END_MODE = 3;
+	private static final int FIND_ROUTE_MODE = 4;
+	private static final int NARROW_DIMENSION = 10;
+	private static final int WIDE_DIMENSION = 75;
+	private static final int START_END_DIMENSION = 10;
+	static final int TOP_OFFSET = 45;	
+	private static final int TERRAIN_WIDTH = 640;
+	private static final int TERRAIN_HEIGHT = 480;
+	
+	private static int selectedMode = 0;
+
+	private static ArrayList<Point> horizontalRectangles = new ArrayList<Point>();
+	private static ArrayList<Point> verticalRectangles = new ArrayList<Point>();
+	private static ArrayList<PointOnTerrain> route = null;
+	private static PointOnTerrain startPoint = null;
+	private static PointOnTerrain endPoint = null;
+	private static TerrainGrid terrainGrid = new TerrainGrid(TERRAIN_WIDTH, TERRAIN_HEIGHT);
+	private static TerrainNavigationAgent terrainNavigationAgent = new TerrainNavigationAgent(terrainGrid);
+	private static boolean routeMapped = false;
+	
+    public void paintComponent(Graphics g) {
+    	
+        super.paintComponent(g);
+
+        //Draw vertical rectangles
+        g.setColor(Color.BLACK);
+        for (Point point : verticalRectangles) {
+        	g.fillRect(point.x, point.y, NARROW_DIMENSION, WIDE_DIMENSION);
+        }
+
+        //Draw horizontal rectangles
+        g.setColor(Color.BLACK);
+        for (Point point : horizontalRectangles) {
+        	g.fillRect(point.x, point.y, WIDE_DIMENSION, NARROW_DIMENSION);
+        }
+        
+        //Draw start point
+        g.setColor(Color.GREEN);
+        if (startPoint != null) {
+        	g.fillOval(startPoint.getxCoordinate() - START_END_DIMENSION / 2, startPoint.getyCoordinate() - TOP_OFFSET - START_END_DIMENSION / 2, START_END_DIMENSION, START_END_DIMENSION);
+        }
+        
+        //Draw end point
+        g.setColor(Color.RED);
+        if (endPoint != null) {
+        	g.fillOval(endPoint.getxCoordinate() - START_END_DIMENSION / 2, endPoint.getyCoordinate() - TOP_OFFSET - START_END_DIMENSION / 2, START_END_DIMENSION, START_END_DIMENSION);
+        }
+        
+        if (selectedMode == FIND_ROUTE_MODE) {
+        	if (route != null) {
+        		g.setColor(Color.ORANGE);
+        		drawRoute(g, route);
+        		routeMapped = true;
+        	}
+        }
+    }
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		
+		switch (selectedMode) {
+		
+		case VERTICAL_RECTANGLE_MODE:
+			if (!routeMapped) {
+				verticalRectangles.add(new Point(e.getX(), e.getY() - TOP_OFFSET));
+				terrainGrid.setRectangularBarrier(e.getX(), e.getY() - TOP_OFFSET, NARROW_DIMENSION, WIDE_DIMENSION);
+			}
+			break;
+			
+		case HORIZONTAL_RECTANGLE_MODE:
+			if (!routeMapped) {
+				horizontalRectangles.add(new Point(e.getX(), e.getY() - TOP_OFFSET));
+				terrainGrid.setRectangularBarrier(e.getX(), e.getY() - TOP_OFFSET, WIDE_DIMENSION, NARROW_DIMENSION);
+			}
+			break;
+			
+		case ADD_START_MODE:
+			if (!routeMapped) {
+				startPoint = new PointOnTerrain(e.getX(), e.getY());
+				terrainNavigationAgent.setStartPoint(startPoint);
+			}
+			break;
+						
+		case ADD_END_MODE:
+			if (!routeMapped) {
+				endPoint = new PointOnTerrain(e.getX(), e.getY());
+				terrainNavigationAgent.setEndPoint(endPoint);
+			}
+			break;
+			
+		case FIND_ROUTE_MODE:
+			if (!routeMapped) {
+				route = terrainNavigationAgent.navigateTerrain();
+				routeMapped = true;
+			}
+			break;
+			
+		}
+		
+		repaint();
+	}
+    
+    private static void drawRoute(Graphics g, ArrayList<PointOnTerrain> route) {
+    	
+    	PointOnTerrain previousRouteNode = null, nextRouteNode = null;
+    	for (PointOnTerrain routeNode : route) {
+    		
+    		if (previousRouteNode == null && nextRouteNode == null) {
+    			previousRouteNode = routeNode;
+    		} else {
+    			nextRouteNode = routeNode;
+    			g.drawLine(previousRouteNode.getxCoordinate(), previousRouteNode.getyCoordinate(), nextRouteNode.getxCoordinate(), nextRouteNode.getyCoordinate());
+    			previousRouteNode = null;
+    			nextRouteNode = null;
+    		}
+    		
+    	}
+    	
+    }
+
+	@Override
+	public void mousePressed(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseReleased(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+	}    	
+}
+
